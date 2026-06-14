@@ -43,6 +43,10 @@ Juego de aventura RPG cuyo motor de decisiones está escrito en **Prolog** (SWI-
 
 ▶ [Ver video de la demo](docs/screenshots/demo.mp4)
 
+https://github.com/user-attachments/assets/a16405fe-6619-415d-b5ab-881d7dcda224
+
+
+
 > Demo en vivo: ejecución local con `php artisan serve` (http://127.0.0.1:8000).
 
 ## Funcionalidad
