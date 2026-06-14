@@ -31,7 +31,15 @@ Juego de aventura RPG cuyo motor de decisiones está escrito en **Prolog** (SWI-
 
 ![Resultado de batalla](docs/screenshots/05-resultado-batalla.png)
 
-> Demo en vivo: local mediante `php artisan serve` (http://127.0.0.1:8000) | Video/GIF: opcional
+**Vista grupal** — resultado de una misión en equipo: contribución de daño de cada integrante y el daño grupal total (`danogrupal/2`) frente a la vida del enemigo.
+
+![Vista grupal](docs/screenshots/loggrupal.png)
+
+### Demo en video
+
+▶ [Ver video de la demo](docs/screenshots/demo.mov)
+
+> Demo en vivo: ejecución local con `php artisan serve` (http://127.0.0.1:8000).
 
 ## Funcionalidad
 
