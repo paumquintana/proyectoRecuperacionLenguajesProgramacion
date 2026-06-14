@@ -1,0 +1,97 @@
+# Aventura Prolog
+
+**Materia**: Lenguajes de Programación | **Periodo**: 2026-1 | **Estado**: Completado
+
+Juego de aventura RPG cuyo motor de decisiones está escrito en **Prolog** (SWI-Prolog) y se presenta a través de una interfaz web en **Laravel 9**. El objetivo académico del proyecto es demostrar el paradigma lógico: toda la lógica del juego (qué misiones puedes aceptar, si una misión es peligrosa, quién es el mejor aliado y el reporte narrativo del combate) la resuelve Prolog mediante reglas, no PHP.
+
+## Equipo de trabajo
+
+- [Pau](https://github.com/paumquintana)
+
+
+## Capturas / Demo
+
+**Selección de personaje** — el jugador elige entre 6 personajes con stats (nivel y vida) cargados desde Prolog.
+
+![Selección de personaje](docs/screenshots/01-seleccion-personaje.png)
+
+**Formación de equipo** — jugar solo o sumar uno o varios aliados. Prolog calcula el daño de cada aliado y marca al más poderoso.
+
+![Formar equipo](docs/screenshots/02-formar-equipo.png)
+
+**Ficha del personaje y misiones** — inventario del personaje y misiones filtradas por la regla `puede_aceptar/2`. Cada misión muestra su enemigo y un indicador de peligro (`nivel_peligro/3`).
+
+![Ficha del personaje](docs/screenshots/03-ficha-personaje.png)
+
+**Preparación de misión** — selección de armas antes de combatir, con el poder de cada una.
+
+![Preparación de misión](docs/screenshots/04-preparacion-mision.png)
+
+**Resultado de batalla** — reporte narrativo generado por `generar_reporte/3` y análisis de combate con el daño grupal (`danogrupal/2`) frente a la vida del enemigo.
+
+![Resultado de batalla](docs/screenshots/05-resultado-batalla.png)
+
+> Demo en vivo: local mediante `php artisan serve` (http://127.0.0.1:8000) | Video/GIF: opcional
+
+## Funcionalidad
+
+- [x] Selección de personaje: 6 personajes con nivel y vida resueltos por Prolog. [Commit](https://github.com/paumquintana/proyectoRecuperacionLenguajesProgramacion/commits/main)
+- [x] Formación de equipo: modo solo o con aliados; Prolog suma el daño y sugiere al más fuerte. [Commit](https://github.com/paumquintana/proyectoRecuperacionLenguajesProgramacion/commits/main)
+- [x] Filtrado de misiones: `puede_aceptar/2` decide qué misiones aparecen disponibles según el nivel. [Commit](https://github.com/paumquintana/proyectoRecuperacionLenguajesProgramacion/commits/main)
+- [x] Indicador de peligro: `nivel_peligro/3` clasifica cada misión como alto o bajo riesgo. [Commit](https://github.com/paumquintana/proyectoRecuperacionLenguajesProgramacion/commits/main)
+- [x] Selección de armas e inventarios por personaje, con cálculo de daño (`sumar_armas/2`). [Commit](https://github.com/paumquintana/proyectoRecuperacionLenguajesProgramacion/commits/main)
+- [x] Combate y reporte narrativo: `generar_reporte/3` y `conjugar_accion/5` producen el mensaje final; `danogrupal/2` resuelve el daño en equipo. [Commit](https://github.com/paumquintana/proyectoRecuperacionLenguajesProgramacion/commits/main)
+- [x] Mejor aliado sugerido: `mejor_aliado/3` recomienda con quién formar equipo. [Commit](https://github.com/paumquintana/proyectoRecuperacionLenguajesProgramacion/commits/main)
+
+## Tecnologías
+
+`SWI-Prolog 10.0.2` | `PHP 8.x` | `Laravel 9` | `Blade` | `HTML/CSS` | `Sin base de datos`
+
+La lógica del juego vive en `prolog/juego.pl`. Laravel invoca a SWI-Prolog mediante `shell_exec` (ver `app/Services/PrologService.php`) y parsea su salida para renderizar las vistas Blade. El proyecto no usa base de datos: todo el estado se deriva de las reglas Prolog en cada petición.
+
+## Ejecución
+
+```bash
+# Instrucciones paso a paso
+
+# 1. Clonar el repositorio
+git clone https://github.com/paumquintana/proyectoRecuperacionLenguajesProgramacion.git
+cd proyectoRecuperacionLenguajesProgramacion
+
+# 2. Instalar dependencias de PHP
+composer install
+
+# 3. Configurar el entorno
+cp .env.example .env
+php artisan key:generate
+
+# 4. Verificar que SWI-Prolog esté instalado y accesible en el PATH
+swipl --version    # requiere SWI-Prolog 10.x
+
+# 5. Levantar el servidor
+php artisan serve
+# Abrir http://127.0.0.1:8000
+```
+
+> **Requisito externo:** el juego depende de que el comando `swipl` esté instalado y disponible en el PATH del sistema. Sin SWI-Prolog, la interfaz carga pero el motor de decisiones no responde.
+
+## Métricas de Progreso
+
+| Indicador               | Valor        |
+| ----------------------- | ------------ |
+| Commits totales         | 7     |
+| Issues/PRs fusionados   | 1/1        |
+| Cobertura de pruebas    | N/A          |
+| Última actualización    | 2026-06-14   |
+
+> Estos números corresponden al historial inicial generado por `setup-git.sh`. Si agregas más commits, actualízalos con `git rev-list --count main`.
+
+## Reflexión y Aprendizajes
+
+- **Habilidades desarrolladas:** programación lógica en Prolog (hechos, reglas, recursión y backtracking), integración entre un lenguaje declarativo y uno imperativo, y diseño de una interfaz web en Laravel/Blade que consume resultados de un motor externo.
+
+- **Qué funcionó bien:** separar por completo la lógica del juego de la presentación. Reglas como `puede_aceptar/2` o `nivel_peligro/3` expresan las decisiones en pocas líneas declarativas, mucho más legibles que el equivalente con condicionales en PHP. La unificación y el backtracking de Prolog resolvieron de forma natural el filtrado de misiones disponibles.
+
+- **Qué se podría mejorar:** la comunicación PHP↔Prolog se hace por `shell_exec` y parseo de texto, lo que es frágil ante cambios de formato y depende de que `swipl` esté en el PATH. Una mejora sería usar un protocolo más robusto (por ejemplo, salida en JSON desde Prolog) o cachear consultas para reducir llamadas al intérprete.
+
+- **Conceptos clave aplicados de la materia:** paradigma lógico/declarativo frente al imperativo, unificación y resolución, recursión sobre listas (`sumar_armas/2`, `danogrupal/2`), y la idea de que un programa puede describir *qué* se quiere en vez de *cómo* calcularlo. El proyecto contrasta directamente la programación lógica (Prolog) con la imperativa/orientada a objetos (PHP/Laravel).
