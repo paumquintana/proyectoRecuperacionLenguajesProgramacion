@@ -174,10 +174,10 @@ php artisan serve
 
 ## Reflexión y Aprendizajes
 
-- **Habilidades desarrolladas:** programación lógica en Prolog (hechos, reglas, recursión y backtracking), integración entre un lenguaje declarativo y uno imperativo, y diseño de una interfaz web en Laravel/Blade que consume resultados de un motor externo.
+- **Habilidades desarrolladas:** era la primera vez que programaba en Prolog y al principio me costó pensar "al revés": en vez de escribir los pasos que debe seguir el programa, uno describe reglas y deja que él saque las conclusiones. También aprendí a conectar Prolog con una página hecha en Laravel, que fue la parte que más me retó.
 
-- **Qué funcionó bien:** separar por completo la lógica del juego de la presentación. Reglas como `puede_aceptar/2` o `nivel_peligro/3` expresan las decisiones en pocas líneas declarativas, mucho más legibles que el equivalente con condicionales en PHP. La unificación y el backtracking de Prolog resolvieron de forma natural el filtrado de misiones disponibles.
+- **Qué funcionó bien:** una vez que entendí cómo funcionan los hechos y las reglas, escribir la lógica del juego fue más corto y claro de lo que esperaba. Me gustó ver que Prolog decide por su cuenta qué misiones puedo aceptar o si una pelea es arriesgada, sin que yo lo tuviera que programar paso a paso.
 
-- **Qué se podría mejorar:** la comunicación PHP↔Prolog se hace por `shell_exec` y parseo de texto, lo que es frágil ante cambios de formato y depende de que `swipl` esté en el PATH. Una mejora sería usar un protocolo más robusto (por ejemplo, salida en JSON desde Prolog) o cachear consultas para reducir llamadas al intérprete.
+- **Qué se podría mejorar:** lograr que PHP y Prolog "se hablen" fue lo más complicado, y a veces se rompía cuando la respuesta no salía con el formato que esperaba. Si tuviera más tiempo me gustaría agregar más personajes y misiones, y dejar esa conexión más estable.
 
-- **Conceptos clave aplicados de la materia:** paradigma lógico/declarativo frente al imperativo, unificación y resolución, recursión sobre listas (`sumar_armas/2`, `danogrupal/2`), y la idea de que un programa puede describir *qué* se quiere en vez de *cómo* calcularlo. El proyecto contrasta directamente la programación lógica (Prolog) con la imperativa/orientada a objetos (PHP/Laravel).
+- **Conceptos clave aplicados de la materia:** la diferencia entre el paradigma lógico y el imperativo, los hechos y las reglas, la recursión (por ejemplo para ir sumando el daño de las armas) y la idea de describir *qué* quiero lograr en lugar de *cómo* se calcula.
