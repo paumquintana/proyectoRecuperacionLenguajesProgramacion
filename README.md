@@ -37,6 +37,10 @@ Juego de aventura RPG cuyo motor de decisiones está escrito en **Prolog** (SWI-
 
 ### Demo en video
 
+<!-- Para reproductor embebido: edita este README en github.com, arrastra
+     docs/screenshots/demo.mp4 al editor y pega aqui abajo la URL que genere
+     (https://github.com/user-attachments/assets/...). Borra la linea del enlace de abajo. -->
+
 ▶ [Ver video de la demo](docs/screenshots/demo.mp4)
 
 > Demo en vivo: ejecución local con `php artisan serve` (http://127.0.0.1:8000).
@@ -101,6 +105,35 @@ Toda la base de conocimiento vive en [`prolog/juego.pl`](prolog/juego.pl). Los d
 `SWI-Prolog 10.0.2` | `PHP 8.x` | `Laravel 9` | `Blade` | `HTML/CSS` | `Sin base de datos`
 
 La lógica del juego vive en `prolog/juego.pl`. Laravel invoca a SWI-Prolog mediante `shell_exec` (ver `app/Services/PrologService.php`) y parsea su salida para renderizar las vistas Blade. El proyecto no usa base de datos: todo el estado se deriva de las reglas Prolog en cada petición.
+
+## Arquitectura
+
+Este proyecto adapta el patrón MVC de Laravel reemplazando la capa de datos: **no usa modelos Eloquent ni base de datos**. En lugar de eso, los datos y la lógica viven en la base de conocimiento de Prolog. El flujo de una petición es:
+
+```
+Navegador
+   │  (HTTP GET)
+   ▼
+routes/web.php  ──►  JuegoController  ──►  PrologService
+                                              │  shell_exec("swipl ...")
+                                              ▼
+                                       prolog/juego.pl   ← datos + reglas
+                                              │  salida de texto
+                                              ▼
+                                       PrologService (parsea)
+                                              │
+                                              ▼
+                                       Vista Blade  ──►  HTML al navegador
+```
+
+Decisiones de diseño:
+
+- **Sin modelos Eloquent.** El único modelo presente, `app/Models/User.php`, es scaffold por defecto de Laravel y no se utiliza. El "modelo" de datos del juego es `prolog/juego.pl`.
+- **Sin base de datos.** No hay migraciones ni persistencia; cada petición vuelve a consultar las reglas Prolog. El juego es de una sola sesión.
+- **Un solo controlador.** `JuegoController` orquesta las 5 rutas del flujo (selección, equipo, ficha, armas, resultado). `Controller.php` es solo la clase base abstracta de Laravel.
+- **`PrologService` como puente.** Aísla la comunicación con SWI-Prolog (`app/Services/PrologService.php`), de modo que el controlador no sabe cómo se ejecuta Prolog, solo pide resultados.
+
+El objetivo académico es que **las decisiones lógicas las tome Prolog, no PHP**: PHP solo transporta datos y arma la vista.
 
 ## Ejecución
 
