@@ -43,6 +43,48 @@ Juego de aventura RPG cuyo motor de decisiones está escrito en **Prolog** (SWI-
 - [x] Combate y reporte narrativo: `generar_reporte/3` y `conjugar_accion/5` producen el mensaje final; `danogrupal/2` resuelve el daño en equipo. [Commit](https://github.com/paumquintana/proyectoRecuperacionLenguajesProgramacion/commits/main)
 - [x] Mejor aliado sugerido: `mejor_aliado/3` recomienda con quién formar equipo. [Commit](https://github.com/paumquintana/proyectoRecuperacionLenguajesProgramacion/commits/main)
 
+## Cómo decide Prolog (lógica del juego)
+
+Toda la base de conocimiento vive en [`prolog/juego.pl`](prolog/juego.pl). Los datos del mundo se representan como **hechos** y las decisiones como **reglas**.
+
+### Datos del juego (hechos)
+
+| Hecho | Forma | Significado |
+| ----- | ----- | ----------- |
+| `personaje(Nombre, Nivel, Vida)` | `personaje('Elara', 5, 100)` | Cada personaje tiene un nivel y puntos de vida. |
+| `mision(ID, Nombre, Dificultad, XP)` | `mision(m1, 'Bosque de Sombras', 2, 50)` | Cada misión exige un nivel (dificultad) y otorga XP. |
+| `arma(Nombre, Daño)` | `arma(espada, 160)` | Cada arma aporta una cantidad de daño. |
+| `enemigo(Nombre, Vida)` | `enemigo('Zombie', 20)` | Cada enemigo tiene vida que hay que superar con daño. |
+
+### Cómo funcionan los puntos
+
+- **Elegibilidad de misiones** — `puede_aceptar(Personaje, Mision)` se cumple solo si `Nivel >= Dificultad`. Esta regla es la que decide qué misiones aparecen disponibles y cuáles bloqueadas. Para equipos, `todos_pueden_aceptar/2` exige (recursivamente) que **todos** los integrantes cumplan el nivel.
+
+- **Daño** — `sumar_armas/2` recorre el inventario y suma el daño de cada arma de forma recursiva. `danogrupal/2` hace lo mismo sumando el daño de todos los miembros del equipo.
+
+- **Combate y riesgo** — `nivel_peligro/3` compara el daño contra la vida del enemigo de la misión: si `Daño >= Vida` el peligro es **bajo** (victoria probable), si no, **alto**. `puede_sobrevivir/2` aplica la misma comparación para el modo en solitario.
+
+- **Experiencia acumulada** — `xp_acumulada/2` calcula XP de forma recursiva (`XP(N) = XP(N-1) + 30·N`), es decir la suma de `30·k` para `k = 1..Dificultad`. El reporte muestra tanto la XP base de la misión como la acumulada.
+
+- **Mejor aliado** — `mejor_aliado/3` usa negación por fallo: devuelve el aliado elegible para la misión tal que **no existe** otro aliado elegible con más daño. Así Prolog elige al compañero más fuerte.
+
+- **Narrativa** — `generar_reporte/3` (versión individual y grupal) arma el mensaje final concatenando datos de la misión, y `conjugar_accion/5` conjuga el verbo *ser* en singular o plural según juegue uno o varios personajes.
+
+### Tabla de reglas
+
+| Regla | Decisión que toma |
+| ----- | ----------------- |
+| `puede_aceptar/2` | Si el nivel del personaje alcanza la dificultad de la misión. |
+| `todos_pueden_aceptar/2` | Si todo un equipo es elegible para una misión (recursiva). |
+| `sumar_armas/2` / `danogrupal/2` | Daño total de un personaje o de un equipo (recursivas). |
+| `nivel_peligro/3` / `puede_sobrevivir/2` | Clasifica el riesgo comparando daño vs. vida del enemigo. |
+| `xp_acumulada/2` | XP acumulada según la dificultad (recursiva). |
+| `mejor_aliado/3` | Aliado disponible con mayor daño (negación por fallo). |
+| `generar_reporte/3` + `conjugar_accion/5` | Mensaje narrativo del resultado, conjugado en singular/plural. |
+| `tiene_requerido/2`, `es_balanceado/1`, `mismo_nivel/2`, `fusionar_equipos/3` | Reglas de apoyo sobre inventarios y atributos. |
+
+> La interfaz (PHP/Laravel) solo consulta estas reglas y muestra el resultado: ninguna de estas decisiones se calcula en PHP.
+
 ## Tecnologías
 
 `SWI-Prolog 10.0.2` | `PHP 8.x` | `Laravel 9` | `Blade` | `HTML/CSS` | `Sin base de datos`
@@ -79,7 +121,7 @@ php artisan serve
 
 | Indicador               | Valor        |
 | ----------------------- | ------------ |
-| Commits totales         | 7     |
+| Commits totales         | 8     |
 | Issues/PRs fusionados   | 1/1        |
 | Cobertura de pruebas    | N/A          |
 | Última actualización    | 2026-06-14   |
