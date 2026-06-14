@@ -190,7 +190,7 @@ class JuegoController extends Controller
     {
         // Datos de la misión
         $lineas = $this->prolog->consultar(
-            "mision({$mision}, Nom, Dif, XP), mision_enemigo({$mision}, Enemigo), enemigo(Enemigo, VidaE), format('~w,~w,~w,~w,~w~n',[Nom,Dif,XP,Enemigo,VidaE])"
+            "mision({$mision}, Nom, Dif, XP), mision_enemigo({$mision}, Enemigo), vida_objetivo({$mision}, VidaE), format('~w,~w,~w,~w,~w~n',[Nom,Dif,XP,Enemigo,VidaE])"
         );
         $misionNombre = 'Misión'; $dificultad = 0; $xp = 0; $enemigo = '?'; $vidaEnemigo = 0;
         if (!empty($lineas[0]) && trim($lineas[0]) !== '') {
@@ -246,7 +246,7 @@ class JuegoController extends Controller
 
         // Datos del enemigo
         $enemigoLineas = $this->prolog->consultar(
-            "mision_enemigo({$mision}, Enemigo), enemigo(Enemigo, Vida), format('~w,~w~n',[Enemigo,Vida])"
+            "mision_enemigo({$mision}, Enemigo), vida_objetivo({$mision}, Vida), format('~w,~w~n',[Enemigo,Vida])"
         );
         $enemigo = '?'; $vidaEnemigo = 0;
         if (!empty($enemigoLineas[0])) {

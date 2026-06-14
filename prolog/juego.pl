@@ -50,12 +50,14 @@ enemigo('Ogro', 150).
 
 
 % ===== MISION - ENEMIGO ASOCIADO =====
-mision_enemigo(m1, 'Zombie').
-mision_enemigo(m2, 'Ogro').
-mision_enemigo(m3, 'Slenderman').
-mision_enemigo(m4, 'Zombie').
-mision_enemigo(m5, 'Ogro').
-mision_enemigo(m6, 'Slenderman').
+% Enemigos asignados de menor a mayor segun la dificultad de la mision:
+% Zombie (debil) -> misiones faciles | Ogro (fuerte) -> misiones dificiles
+mision_enemigo(m1, 'Zombie').      % dificultad 2
+mision_enemigo(m4, 'Zombie').      % dificultad 3
+mision_enemigo(m2, 'Slenderman').  % dificultad 5
+mision_enemigo(m5, 'Slenderman').  % dificultad 6
+mision_enemigo(m3, 'Ogro').        % dificultad 7
+mision_enemigo(m6, 'Ogro').        % dificultad 9
 
 
 % ===== CONJUGACION VERBAL =====
@@ -219,30 +221,40 @@ ataque_grupal(ListaJugadores, Enemigo) :-
         [Enemigo, Vida, DanoTotal, Resultado]).
 
 
-% --- puede_sobrevivir/2 ---
-% Verifica si el daño del personaje supera la vida del enemigo de la mision
-puede_sobrevivir(Personaje, MisionID) :-
+% --- vida_objetivo/2 ---
+% Vida efectiva del enemigo de una mision, escalada por la dificultad.
+% Asi una misma criatura es mas dura en una mision mas dificil y el
+% combate queda alineado con el nivel de la mision.
+%   VidaEfectiva = VidaBase + (Dificultad * 20)
+vida_objetivo(MisionID, VidaEfectiva) :-
     mision_enemigo(MisionID, Enemigo),
+    enemigo(Enemigo, VidaBase),
+    mision(MisionID, _, Dificultad, _),
+    VidaEfectiva is VidaBase + (Dificultad * 20).
+
+
+% --- puede_sobrevivir/2 ---
+% Verifica si el daño del personaje supera la vida efectiva del enemigo
+puede_sobrevivir(Personaje, MisionID) :-
     inventario(Personaje, Armas),
     sumar_armas(Armas, Dano),
-    enemigo(Enemigo, VidaEnemigo),
+    vida_objetivo(MisionID, VidaEnemigo),
     Dano >= VidaEnemigo.
 
 
 % --- nivel_peligro/3 ---
 % Clasifica el riesgo de una mision para un personaje (alto / bajo)
+% comparando el daño del personaje contra la vida efectiva del enemigo
 nivel_peligro(Personaje, MisionID, alto) :-
-    mision_enemigo(MisionID, Enemigo),
     inventario(Personaje, Armas),
     sumar_armas(Armas, Dano),
-    enemigo(Enemigo, Vida),
+    vida_objetivo(MisionID, Vida),
     Dano < Vida.
 
 nivel_peligro(Personaje, MisionID, bajo) :-
-    mision_enemigo(MisionID, Enemigo),
     inventario(Personaje, Armas),
     sumar_armas(Armas, Dano),
-    enemigo(Enemigo, Vida),
+    vida_objetivo(MisionID, Vida),
     Dano >= Vida.
 
 

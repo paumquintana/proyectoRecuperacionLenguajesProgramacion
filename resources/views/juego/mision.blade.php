@@ -447,15 +447,7 @@
     @endif
 
     {{-- Info cards --}}
-    <div class="info-grid" style="{{ $esGrupal ? 'grid-template-columns:1fr' : '' }}">
-        @if(!$esGrupal)
-        <div class="info-card">
-            <p class="caja-label">MEJOR ALIADO — mejor_aliado/3</p>
-            <p class="info-card-valor val-aliado">
-                {{ $mejorAliado && $mejorAliado !== 'Ninguno' ? '★ ' . $mejorAliado : '—' }}
-            </p>
-        </div>
-        @endif
+    <div class="info-grid" style="grid-template-columns:1fr">
         <div class="info-card">
             <p class="caja-label">XP OBTENIDA</p>
             <p class="info-card-valor val-xp">{{ $victoria ? $xp : 0 }}</p>

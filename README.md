@@ -62,7 +62,9 @@ Toda la base de conocimiento vive en [`prolog/juego.pl`](prolog/juego.pl). Los d
 
 - **Daño** — `sumar_armas/2` recorre el inventario y suma el daño de cada arma de forma recursiva. `danogrupal/2` hace lo mismo sumando el daño de todos los miembros del equipo.
 
-- **Combate y riesgo** — `nivel_peligro/3` compara el daño contra la vida del enemigo de la misión: si `Daño >= Vida` el peligro es **bajo** (victoria probable), si no, **alto**. `puede_sobrevivir/2` aplica la misma comparación para el modo en solitario.
+- **Vida efectiva del enemigo** — `vida_objetivo/2` escala la vida del enemigo según la dificultad de la misión: `VidaEfectiva = VidaBase + (Dificultad · 20)`. Así una misma criatura es más dura en una misión más difícil y el combate queda alineado con el nivel de la misión (las misiones difíciles realmente cuestan más).
+
+- **Combate y riesgo** — `nivel_peligro/3` compara el daño contra la **vida efectiva** del enemigo: si `Daño >= VidaEfectiva` el peligro es **bajo** (victoria probable), si no, **alto**. `puede_sobrevivir/2` aplica la misma comparación para el modo en solitario.
 
 - **Experiencia acumulada** — `xp_acumulada/2` calcula XP de forma recursiva (`XP(N) = XP(N-1) + 30·N`), es decir la suma de `30·k` para `k = 1..Dificultad`. El reporte muestra tanto la XP base de la misión como la acumulada.
 
@@ -77,7 +79,8 @@ Toda la base de conocimiento vive en [`prolog/juego.pl`](prolog/juego.pl). Los d
 | `puede_aceptar/2` | Si el nivel del personaje alcanza la dificultad de la misión. |
 | `todos_pueden_aceptar/2` | Si todo un equipo es elegible para una misión (recursiva). |
 | `sumar_armas/2` / `danogrupal/2` | Daño total de un personaje o de un equipo (recursivas). |
-| `nivel_peligro/3` / `puede_sobrevivir/2` | Clasifica el riesgo comparando daño vs. vida del enemigo. |
+| `vida_objetivo/2` | Vida efectiva del enemigo escalada por la dificultad de la misión. |
+| `nivel_peligro/3` / `puede_sobrevivir/2` | Clasifica el riesgo comparando daño vs. vida efectiva del enemigo. |
 | `xp_acumulada/2` | XP acumulada según la dificultad (recursiva). |
 | `mejor_aliado/3` | Aliado disponible con mayor daño (negación por fallo). |
 | `generar_reporte/3` + `conjugar_accion/5` | Mensaje narrativo del resultado, conjugado en singular/plural. |
